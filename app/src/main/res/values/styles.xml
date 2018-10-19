@@ -8,4 +8,9 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="App.Theme.Sheet" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/transparent</item>
+    </style>
 </resources>

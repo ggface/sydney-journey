@@ -9,6 +9,7 @@
     <color name="secondary_text">#757575</color>
     <color name="icons">#212121</color>
     <color name="divider">#BDBDBD</color>
+    <color name="transparent">#0000</color>
 
     <color name="black">#FF000000</color>
     <color name="black_95_alpha">#F2000000</color>

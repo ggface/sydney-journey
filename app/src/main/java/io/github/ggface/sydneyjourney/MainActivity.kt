@@ -6,7 +6,10 @@ import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.map.CameraPosition
+import com.yandex.mapkit.map.MapObject
 import com.yandex.mapkit.map.MapObjectCollection
+import com.yandex.mapkit.map.MapObjectTapListener
+import com.yandex.runtime.image.ImageProvider
 import io.github.ggface.sydneyjourney.api.RemoteRepository
 import io.github.ggface.sydneyjourney.api.pojo.Venue
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -20,6 +23,7 @@ class MainActivity : AppCompatActivity() {
 
     private val mCompositeDisposable = CompositeDisposable()
     private lateinit var mapObjects: MapObjectCollection
+
     //region Lifecycle
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         mapObjects = mapView.map.mapObjects.addCollection()
         mapView.map.move(
-                CameraPosition(SYDNEY_POINT, 10f, 0.0f, 0.0f),
+                CameraPosition(SYDNEY_POINT, 12f, 0.0f, 0.0f),
                 Animation(Animation.Type.SMOOTH, 0.5f),
                 null)
     }
@@ -64,7 +68,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun makeBunch(venues: List<Venue>) {
         for (venue in venues) {
-            mapObjects.addPlacemark(Point(venue.latitude, venue.longitude))
+            val image: ImageProvider = ImageProvider.fromResource(this, R.drawable.ic_maps_venue)
+            val placemark = mapObjects.addPlacemark(Point(venue.latitude, venue.longitude), image)
+            placemark.userData = venue
+
+            placemark.addTapListener(MapObjectTapListener { mapObject: MapObject?, point: Point? ->
+                val venue = mapObject!!.userData as Venue
+                VenueDialogFragment.openActivateDialog(this, venue)
+                true
+            })
         }
     }
 }
