@@ -1,4 +1,4 @@
-package io.github.ggface.sydneyjourney
+package io.github.ggface.sydneyjourney.map
 
 import android.content.Intent
 import android.os.Bundle
@@ -12,15 +12,23 @@ import com.yandex.mapkit.map.MapObject
 import com.yandex.mapkit.map.MapObjectCollection
 import com.yandex.mapkit.map.MapObjectTapListener
 import com.yandex.runtime.image.ImageProvider
-import io.github.ggface.sydneyjourney.api.RemoteRepository
+import io.github.ggface.sydneyjourney.BuildConfig
+import io.github.ggface.sydneyjourney.R
+import io.github.ggface.sydneyjourney.VenueDialogFragment
 import io.github.ggface.sydneyjourney.api.pojo.Venue
 import io.github.ggface.sydneyjourney.list.ListActivity
+import io.github.ggface.sydneyjourney.repository
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 
-class MainActivity : AppCompatActivity() {
+/**
+ * Venues Map Screen
+ *
+ * @author Ivan Novikov on 2018-10-15.
+ */
+class MapActivity : AppCompatActivity() {
 
     private val SYDNEY_POINT = Point(-33.8791, 151.1944)
 
@@ -65,18 +73,18 @@ class MainActivity : AppCompatActivity() {
         mapView.onStart()
 
         progress_bar.visibility = View.VISIBLE
-        mCompositeDisposable.add(getRemoteRepository().obtainVenues()
+        mCompositeDisposable.add(repository().obtainVenues()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    Timber.tag("sys_").d("MainActivity::obtainVenues() OK")
+                    Timber.tag("sys_").d("MapActivity::obtainVenues() OK")
                     progress_bar.visibility = View.INVISIBLE
                 }, {
-                    Timber.tag("sys_").d("MainActivity::obtainVenues() FAIL -> ${it.message}")
+                    Timber.tag("sys_").d("MapActivity::obtainVenues() FAIL -> ${it.message}")
                     progress_bar.visibility = View.INVISIBLE
                 }))
 
 
-        mCompositeDisposable.add(getRemoteRepository().venues()
+        mCompositeDisposable.add(repository().venues()
                 .distinctUntilChanged()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ makeBunch(it) }))
@@ -89,10 +97,6 @@ class MainActivity : AppCompatActivity() {
         mCompositeDisposable.clear()
     }
     //endregion Lifecycle
-
-    private fun getRemoteRepository(): RemoteRepository {
-        return (application as SydneyJourneyApplication).remoteRepository
-    }
 
     private fun makeBunch(venues: List<Venue>) {
         for (venue in venues) {
