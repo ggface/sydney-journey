@@ -1,7 +1,9 @@
 package io.github.ggface.sydneyjourney
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
@@ -12,6 +14,7 @@ import com.yandex.mapkit.map.MapObjectTapListener
 import com.yandex.runtime.image.ImageProvider
 import io.github.ggface.sydneyjourney.api.RemoteRepository
 import io.github.ggface.sydneyjourney.api.pojo.Venue
+import io.github.ggface.sydneyjourney.list.ListActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_main.*
@@ -30,11 +33,30 @@ class MainActivity : AppCompatActivity() {
         MapKitFactory.setApiKey(BuildConfig.MAPKIT_API_KEY)
         MapKitFactory.initialize(this)
         setContentView(R.layout.activity_main)
+
+        initToolbar()
+        initViews()
+
         mapObjects = mapView.map.mapObjects.addCollection()
         mapView.map.move(
-                CameraPosition(SYDNEY_POINT, 12f, 0.0f, 0.0f),
+                CameraPosition(SYDNEY_POINT, 10f, 0.0f, 0.0f),
                 Animation(Animation.Type.SMOOTH, 0.5f),
                 null)
+    }
+
+    private fun initViews() {
+        progress_bar.visibility = View.INVISIBLE
+    }
+
+    private fun initToolbar() {
+        toolbar.inflateMenu(R.menu.menu_main);
+        toolbar.setOnMenuItemClickListener {
+            if (it.itemId == R.id.menu_action_list) {
+                startActivity(Intent(this, ListActivity::class.java))
+                true
+            }
+            false
+        }
     }
 
     override fun onStart() {
@@ -42,10 +64,16 @@ class MainActivity : AppCompatActivity() {
         MapKitFactory.getInstance().onStart()
         mapView.onStart()
 
+        progress_bar.visibility = View.VISIBLE
         mCompositeDisposable.add(getRemoteRepository().obtainVenues()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ Timber.tag("sys_").d("MainActivity::obtainVenues() OK") },
-                        { Timber.tag("sys_").d("MainActivity::obtainVenues() FAIL -> ${it.message}") }))
+                .subscribe({
+                    Timber.tag("sys_").d("MainActivity::obtainVenues() OK")
+                    progress_bar.visibility = View.INVISIBLE
+                }, {
+                    Timber.tag("sys_").d("MainActivity::obtainVenues() FAIL -> ${it.message}")
+                    progress_bar.visibility = View.INVISIBLE
+                }))
 
 
         mCompositeDisposable.add(getRemoteRepository().venues()
