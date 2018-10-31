@@ -16,7 +16,7 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
-        buildConfigField "String", 'MAPKIT_API_KEY', '"b5f5f422-c119-4e24-be7f-d5ec8a70794a"'
+        buildConfigField "String", 'MAPKIT_API_KEY', '"pk.eyJ1IjoiZ2dmYWNlIiwiYSI6ImNqbndweWJrZjBiY2QzcG9rcnRuNjVueXEifQ.d6Ellr0yjqGU_X7uTuxC9g"'
         buildConfigField "String", 'LOCATION_HOST', "\"http://bit.ly\""
 
         multiDexEnabled true
@@ -40,7 +40,7 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
 
     implementation 'com.jakewharton.timber:timber:4.7.1'
-    implementation 'com.yandex.android:mapkit:3.0.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:6.6.2'
     implementation 'com.google.code.gson:gson:2.8.5'
 
     implementation "com.squareup.okhttp3:okhttp:$okhttp_version"

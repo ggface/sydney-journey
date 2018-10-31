@@ -2,9 +2,12 @@ package io.github.ggface.sydneyjourney.list
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.widget.Toast
 import io.github.ggface.sydneyjourney.R
+import io.github.ggface.sydneyjourney.VenueDialogFragment
 import io.github.ggface.sydneyjourney.api.pojo.Venue
 import io.github.ggface.sydneyjourney.repository
+import kotlinx.android.synthetic.main.activity_list.*
 
 /**
  * Venues List Screen
@@ -14,27 +17,46 @@ import io.github.ggface.sydneyjourney.repository
 class ListActivity : AppCompatActivity(), ListContract.View {
 
     lateinit var mPresenter: ListContract.Presenter
+    lateinit var mAdapter: VenuesAdapter
 
     //region Lifecycle
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
+        initRecyclerView()
         mPresenter = ListPresenter(this, repository())
+    }
 
+    override fun onStart() {
+        super.onStart()
+        mPresenter.subscribe()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mPresenter.unsubscribe()
     }
     //endregion Lifecycle
 
     //region ListContract.View
     override fun onLoadingChanged(isActive: Boolean) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        swipe_refresh_layout.isRefreshing = isActive
     }
 
     override fun onVenuesChanged(venues: List<Venue>) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        mAdapter.setItems(venues)
     }
 
     override fun showError(message: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Toast.makeText(applicationContext, "error=$message", Toast.LENGTH_SHORT).show()
     }
     //endregion ListContract.View
+
+    private fun initRecyclerView() {
+        mAdapter = VenuesAdapter(OnItemClickListener { venue, _ ->
+            VenueDialogFragment.openActivateDialog(this, venue)
+        })
+
+        venues_recycler_view.adapter = mAdapter
+    }
 }

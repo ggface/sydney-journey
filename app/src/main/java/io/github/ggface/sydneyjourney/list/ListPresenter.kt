@@ -27,6 +27,8 @@ class ListPresenter(private val view: ListContract.View,
                 .distinctUntilChanged()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { view.onVenuesChanged(it) })
+
+        loadVenues()
     }
 
     override fun unsubscribe() {

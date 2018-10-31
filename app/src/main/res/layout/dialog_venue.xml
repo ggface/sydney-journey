@@ -2,7 +2,6 @@
 <android.support.v4.widget.NestedScrollView
     android:id="@+id/nested_scroll_view"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/background_venue_dialog">
@@ -21,17 +20,28 @@
         android:paddingRight="32dp"
         android:paddingTop="16dp">
 
+        <EditText
+            android:id="@+id/venue_name_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/venue_name"
+            android:inputType="textCapSentences"
+            android:lines="1"
+            android:maxLines="1"/>
+
         <TextView
             android:id="@+id/title_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:paddingBottom="16dp"
-            tools:text="Войти в аккаунт"/>
+            android:paddingBottom="16dp"/>
 
         <EditText
+            android:id="@+id/venue_description_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="@string/venue_description"
+            android:inputType="textCapSentences"
             android:lines="4"/>
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>

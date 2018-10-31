@@ -1,6 +1,5 @@
 package io.github.ggface.sydneyjourney
 
-import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
@@ -9,6 +8,7 @@ import android.support.v4.app.FragmentActivity
 import android.support.v7.app.AppCompatDialogFragment
 import android.view.View
 import android.view.WindowManager
+import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.TextView
 import io.github.ggface.sydneyjourney.api.pojo.Venue
@@ -20,28 +20,20 @@ import io.github.ggface.sydneyjourney.api.pojo.Venue
  */
 class VenueDialogFragment : AppCompatDialogFragment() {
 
-    lateinit var mVenue: Venue
-
-    protected val softInputMode: Int
-        get() = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_UNSPECIFIED
-
-    /**
-     * @return start state
-     * @see BottomSheetBehavior.setState
-     */
-    protected val startState: Int
-        get() = BottomSheetBehavior.STATE_EXPANDED
+    private lateinit var mVenue: Venue
+    private lateinit var mTitleTextView: TextView
+    private lateinit var mVenueNameEditText: EditText
+    private lateinit var mVenueDescriptionEditText: EditText
 
     //region Lifecycle
-
-    @SuppressLint("RestrictedApi")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val bottomSheetDialog = BottomSheetDialog(activity!!, R.style.App_Theme_Sheet)
         val contentView = View.inflate(context, R.layout.dialog_venue, null)
         bottomSheetDialog.setContentView(contentView)
+        initViews(contentView)
 
         if (bottomSheetDialog.window != null) {
-            bottomSheetDialog.window!!.setSoftInputMode(softInputMode)
+            bottomSheetDialog.window!!.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_UNSPECIFIED)
         }
 
         bottomSheetDialog.setCanceledOnTouchOutside(true)
@@ -50,17 +42,37 @@ class VenueDialogFragment : AppCompatDialogFragment() {
 
             val bottomSheet = d.findViewById<FrameLayout>(android.support.design.R.id.design_bottom_sheet)
             if (bottomSheet != null) {
-                BottomSheetBehavior.from(bottomSheet).state = startState
+                BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
             }
         }
 
-        mVenue = arguments!!.getParcelable(ARG_VENUE)!!
+        val venue: Venue? = arguments!!.getParcelable(ARG_VENUE)
+
+        if (venue == null) {
+            mVenue = Venue("", arguments!!.getDouble(ARG_LAT), arguments!!.getDouble(ARG_LON))
+            switchToEdit()
+        } else {
+            mVenue = venue
+            switchToView()
+        }
 
         initCallback(contentView)
-        initViews(contentView)
+
+        mTitleTextView.text = mVenue.name
+
         return bottomSheetDialog
     }
     //endregion Lifecycle
+
+    private fun switchToView() {
+        mVenueNameEditText.visibility = View.GONE
+        mTitleTextView.visibility = View.VISIBLE
+    }
+
+    private fun switchToEdit() {
+        mVenueNameEditText.visibility = View.VISIBLE
+        mTitleTextView.visibility = View.GONE
+    }
 
     private fun initCallback(contentView: View) {
         val mBottomSheetBehavior = BottomSheetBehavior.from(contentView.parent as View)
@@ -70,16 +82,21 @@ class VenueDialogFragment : AppCompatDialogFragment() {
     }
 
     private fun initViews(contentView: View) {
-        contentView.findViewById<TextView>(R.id.title_text_view).text = mVenue.name
+        mTitleTextView = contentView.findViewById(R.id.title_text_view)
+        mVenueNameEditText = contentView.findViewById(R.id.venue_name_edit_text)
+        mVenueDescriptionEditText = contentView.findViewById(R.id.venue_description_edit_text)
     }
 
     companion object {
 
-        private val ARG_VENUE = "ARG_VENUE"
+        private const val ARG_VENUE = "ARG_VENUE"
+        private const val ARG_LAT = "ARG_LAT"
+        private const val ARG_LON = "ARG_LON"
+
         private val TAG = VenueDialogFragment::class.java.simpleName
 
         /**
-         * Entry point. Shows dialog.
+         * Entry point. Shows venue dialog.
          *
          * @param activity Activity
          * @param venue    Venue
@@ -89,7 +106,26 @@ class VenueDialogFragment : AppCompatDialogFragment() {
             val dialog = activity.supportFragmentManager.findFragmentByTag(TAG)
             if (dialog == null) {
                 activity.supportFragmentManager.beginTransaction()
-                        .add(VenueDialogFragment.newInstance(venue), TAG)
+                        .add(VenueDialogFragment.newInstance(venue, null, null), TAG)
+                        .commitAllowingStateLoss()
+            }
+        }
+
+        /**
+         * Entry point. Shows venue dialog.
+         *
+         * @param activity  Activity
+         * @param latitude  Location latitude
+         * @param longitude Location longitude
+         */
+        @JvmStatic
+        fun openActivateDialog(activity: FragmentActivity,
+                               latitude: Double,
+                               longitude: Double?) {
+            val dialog = activity.supportFragmentManager.findFragmentByTag(TAG)
+            if (dialog == null) {
+                activity.supportFragmentManager.beginTransaction()
+                        .add(VenueDialogFragment.newInstance(null, latitude, longitude), TAG)
                         .commitAllowingStateLoss()
             }
         }
@@ -97,13 +133,21 @@ class VenueDialogFragment : AppCompatDialogFragment() {
         /**
          * Default constructor
          *
-         * @param venue Venue
+         * @param venue     Venue
+         * @param latitude  Location latitude
+         * @param longitude Location longitude
          * @return dialog
          */
-        private fun newInstance(venue: Venue): VenueDialogFragment {
+        private fun newInstance(venue: Venue?,
+                                latitude: Double?,
+                                longitude: Double?): VenueDialogFragment {
             val fragment = VenueDialogFragment()
             val bundle = Bundle()
             bundle.putParcelable(ARG_VENUE, venue)
+            if (latitude != null && longitude != null) {
+                bundle.putDouble(ARG_LAT, latitude)
+                bundle.putDouble(ARG_LON, longitude)
+            }
             fragment.arguments = bundle
             return fragment
         }
