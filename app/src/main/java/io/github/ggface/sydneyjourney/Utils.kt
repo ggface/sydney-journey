@@ -11,3 +11,7 @@ import io.github.ggface.sydneyjourney.api.RemoteRepository
 fun Activity.repository(): RemoteRepository {
     return (this.application as SydneyJourneyApplication).remoteRepository
 }
+
+fun nonNull(nullableString: String?): String {
+    return nullableString ?: ""
+}

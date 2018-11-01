@@ -1,16 +1,31 @@
 <resources>
 
-    <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:textViewStyle">@style/TextStyle</item>
+        <item name="editTextStyle">@style/EditTextStyle</item>
     </style>
 
     <style name="App.Theme.Sheet" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="colorPrimary">@color/white</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:colorBackground">@color/transparent</item>
+    </style>
+
+    <style name="EditTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="android:textAppearance">@style/TextStyle</item>
+        <item name="android:background">@drawable/background_input</item>
+        <item name="android:minHeight">36dp</item>
+        <item name="android:padding">@dimen/view_padding</item>
+        <item name="android:gravity">top|left</item>
+    </style>
+
+    <style name="TextStyle" parent="@style/TextAppearance.AppCompat">
+        <item name="android:textColor">@color/black_90_alpha</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">normal</item>
     </style>
 </resources>

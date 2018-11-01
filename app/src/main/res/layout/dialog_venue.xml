@@ -2,46 +2,101 @@
 <android.support.v4.widget.NestedScrollView
     android:id="@+id/nested_scroll_view"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/background_venue_dialog">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clipChildren="false"
         android:clipToPadding="false"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        android:paddingBottom="32dp"
-        android:paddingLeft="32dp"
-        android:paddingRight="32dp"
-        android:paddingTop="16dp">
+        android:padding="@dimen/view_padding">
 
-        <EditText
-            android:id="@+id/venue_name_edit_text"
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_venue_dialog_image"
+            tools:ignore="ContentDescription"/>
+
+        <ImageButton
+            android:id="@+id/delete_image_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentLeft="true"
+            android:background="@null"
+            android:contentDescription="@string/dialog_delete_venue"
+            android:src="@drawable/ic_action_delete_outline"/>
+
+        <ImageButton
+            android:id="@+id/edit_image_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentRight="true"
+            android:background="@null"
+            android:contentDescription="@string/dialog_edit_venue"
+            android:src="@drawable/ic_action_edit"/>
+
+        <ImageButton
+            android:id="@+id/done_image_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentRight="true"
+            android:background="@null"
+            android:contentDescription="@string/dialog_edit_done"
+            android:src="@drawable/ic_action_done"
+            tools:visibility="gone"/>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/venue_name"
-            android:inputType="textCapSentences"
-            android:lines="1"
-            android:maxLines="1"/>
+            android:layout_marginTop="48dp"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/title_text_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:paddingBottom="16dp"/>
+            <EditText
+                android:id="@+id/venue_name_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:hint="@string/venue_name"
+                android:inputType="textCapSentences"
+                android:lines="1"
+                android:maxLines="1"
+                tools:visibility="gone"/>
 
-        <EditText
-            android:id="@+id/venue_description_edit_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/venue_description"
-            android:inputType="textCapSentences"
-            android:lines="4"/>
-    </LinearLayout>
+            <TextView
+                android:id="@+id/title_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:paddingBottom="@dimen/view_padding"
+                android:paddingTop="@dimen/view_padding"
+                android:textSize="18sp"
+                tools:text="Venue name"/>
+
+            <TextView
+                android:id="@+id/no_description_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:background="@drawable/background_input"
+                android:padding="@dimen/view_padding"
+                android:text="@string/dialog_no_description_stub"/>
+
+            <EditText
+                android:id="@+id/venue_description_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:hint="@string/venue_description"
+                android:inputType="textCapSentences|textMultiLine"
+                android:maxLines="10"
+                android:minLines="6"
+                tools:visibility="gone"/>
+        </LinearLayout>
+    </RelativeLayout>
 </android.support.v4.widget.NestedScrollView>

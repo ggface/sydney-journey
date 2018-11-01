@@ -10,6 +10,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.EditText
 import android.widget.FrameLayout
+import android.widget.ImageButton
 import android.widget.TextView
 import io.github.ggface.sydneyjourney.api.pojo.Venue
 
@@ -22,8 +23,12 @@ class VenueDialogFragment : AppCompatDialogFragment() {
 
     private lateinit var mVenue: Venue
     private lateinit var mTitleTextView: TextView
+    private lateinit var mNoDescriptionTextView: TextView
     private lateinit var mVenueNameEditText: EditText
     private lateinit var mVenueDescriptionEditText: EditText
+    private lateinit var mDeleteImageButton: ImageButton
+    private lateinit var mEditImageButton: ImageButton
+    private lateinit var mDoneImageButton: ImageButton
 
     //region Lifecycle
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -49,7 +54,7 @@ class VenueDialogFragment : AppCompatDialogFragment() {
         val venue: Venue? = arguments!!.getParcelable(ARG_VENUE)
 
         if (venue == null) {
-            mVenue = Venue("", arguments!!.getDouble(ARG_LAT), arguments!!.getDouble(ARG_LON))
+            mVenue = Venue("", arguments!!.getDouble(ARG_LAT), arguments!!.getDouble(ARG_LON), null)
             switchToEdit()
         } else {
             mVenue = venue
@@ -67,11 +72,23 @@ class VenueDialogFragment : AppCompatDialogFragment() {
     private fun switchToView() {
         mVenueNameEditText.visibility = View.GONE
         mTitleTextView.visibility = View.VISIBLE
+        mNoDescriptionTextView.visibility = if (mVenue.description.isEmpty()) View.VISIBLE else View.GONE
+        mVenueDescriptionEditText.visibility = if (mVenue.description.isEmpty()) View.GONE else View.VISIBLE
+
+        mDeleteImageButton.visibility = View.GONE
+        mEditImageButton.visibility = View.VISIBLE
+        mDoneImageButton.visibility = View.GONE
     }
 
     private fun switchToEdit() {
         mVenueNameEditText.visibility = View.VISIBLE
         mTitleTextView.visibility = View.GONE
+        mVenueDescriptionEditText.visibility = View.VISIBLE
+        mNoDescriptionTextView.visibility = View.GONE
+
+        mDeleteImageButton.visibility = View.GONE
+        mEditImageButton.visibility = View.GONE
+        mDoneImageButton.visibility = View.VISIBLE
     }
 
     private fun initCallback(contentView: View) {
@@ -83,8 +100,12 @@ class VenueDialogFragment : AppCompatDialogFragment() {
 
     private fun initViews(contentView: View) {
         mTitleTextView = contentView.findViewById(R.id.title_text_view)
+        mNoDescriptionTextView = contentView.findViewById(R.id.no_description_text_view)
         mVenueNameEditText = contentView.findViewById(R.id.venue_name_edit_text)
         mVenueDescriptionEditText = contentView.findViewById(R.id.venue_description_edit_text)
+        mDeleteImageButton = contentView.findViewById(R.id.delete_image_button)
+        mEditImageButton = contentView.findViewById(R.id.edit_image_button)
+        mDoneImageButton = contentView.findViewById(R.id.done_image_button)
     }
 
     companion object {

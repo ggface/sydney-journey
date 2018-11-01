@@ -1,6 +1,13 @@
-<resources>
-    <string name="app_name">Sydney Journey</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name" tools:override="true">Sydney Journey</string>
     <string name="menu_action_list">Show list</string>
     <string name="venue_name">Venue name</string>
+
+    <!--region Venue Dialog-->
     <string name="venue_description">Description</string>
+    <string name="dialog_delete_venue">Delete venue</string>
+    <string name="dialog_edit_venue">Edit venue</string>
+    <string name="dialog_edit_done">Done</string>
+    <string name="dialog_no_description_stub">Press Edit to add some description</string>
+    <!--endregion Venue Dialog-->
 </resources>
