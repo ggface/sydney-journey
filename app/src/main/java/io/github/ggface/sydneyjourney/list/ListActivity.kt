@@ -4,8 +4,9 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import io.github.ggface.sydneyjourney.R
-import io.github.ggface.sydneyjourney.VenueDialogFragment
 import io.github.ggface.sydneyjourney.api.pojo.Venue
+import io.github.ggface.sydneyjourney.dialog.OnVenueEventsListener
+import io.github.ggface.sydneyjourney.dialog.VenueDialogFragment
 import io.github.ggface.sydneyjourney.repository
 import kotlinx.android.synthetic.main.activity_list.*
 
@@ -14,7 +15,7 @@ import kotlinx.android.synthetic.main.activity_list.*
  *
  * @author Ivan Novikov on 2018-10-22.
  */
-class ListActivity : AppCompatActivity(), ListContract.View {
+class ListActivity : AppCompatActivity(), ListContract.View, OnVenueEventsListener {
 
     lateinit var mPresenter: ListContract.Presenter
     lateinit var mAdapter: VenuesAdapter
@@ -51,6 +52,20 @@ class ListActivity : AppCompatActivity(), ListContract.View {
         Toast.makeText(applicationContext, "error=$message", Toast.LENGTH_SHORT).show()
     }
     //endregion ListContract.View
+
+    //region OnVenueEventsListener
+    override fun onUpdate(venue: Venue) {
+//        mPresenter.updateVenue(venue)
+    }
+
+    override fun onDelete(venue: Venue) {
+//        mPresenter.deleteVenue(venue)
+    }
+
+    override fun onCreate(venue: Venue) {
+//        mPresenter.createVenue(venue)
+    }
+    //endregion OnVenueEventsListener
 
     private fun initRecyclerView() {
         mAdapter = VenuesAdapter(OnItemClickListener { venue, _ ->

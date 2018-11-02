@@ -1,5 +1,6 @@
-package io.github.ggface.sydneyjourney
+package io.github.ggface.sydneyjourney.dialog
 
+import android.app.Activity
 import android.app.Dialog
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
@@ -12,6 +13,7 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.TextView
+import io.github.ggface.sydneyjourney.R
 import io.github.ggface.sydneyjourney.api.pojo.Venue
 
 /**
@@ -21,6 +23,8 @@ import io.github.ggface.sydneyjourney.api.pojo.Venue
  */
 class VenueDialogFragment : AppCompatDialogFragment() {
 
+    private var mIsNew = false
+    private var mOnVenueEventsListener: OnVenueEventsListener? = null
     private lateinit var mVenue: Venue
     private lateinit var mTitleTextView: TextView
     private lateinit var mNoDescriptionTextView: TextView
@@ -30,7 +34,11 @@ class VenueDialogFragment : AppCompatDialogFragment() {
     private lateinit var mEditImageButton: ImageButton
     private lateinit var mDoneImageButton: ImageButton
 
-    //region Lifecycle
+    override fun onAttach(activity: Activity?) {
+        super.onAttach(activity)
+        mOnVenueEventsListener = activity as OnVenueEventsListener
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val bottomSheetDialog = BottomSheetDialog(activity!!, R.style.App_Theme_Sheet)
         val contentView = View.inflate(context, R.layout.dialog_venue, null)
@@ -54,6 +62,7 @@ class VenueDialogFragment : AppCompatDialogFragment() {
         val venue: Venue? = arguments!!.getParcelable(ARG_VENUE)
 
         if (venue == null) {
+            mIsNew = true
             mVenue = Venue("", arguments!!.getDouble(ARG_LAT), arguments!!.getDouble(ARG_LON), null)
             switchToEdit()
         } else {
@@ -62,30 +71,33 @@ class VenueDialogFragment : AppCompatDialogFragment() {
         }
 
         initCallback(contentView)
-
-        mTitleTextView.text = mVenue.name
-
+        fillViews(savedInstanceState)
         return bottomSheetDialog
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        mOnVenueEventsListener = null
     }
     //endregion Lifecycle
 
     private fun switchToView() {
         mVenueNameEditText.visibility = View.GONE
         mTitleTextView.visibility = View.VISIBLE
-        mNoDescriptionTextView.visibility = if (mVenue.description.isEmpty()) View.VISIBLE else View.GONE
-        mVenueDescriptionEditText.visibility = if (mVenue.description.isEmpty()) View.GONE else View.VISIBLE
-
+        mNoDescriptionTextView.visibility = if (mVenue.description.isNullOrEmpty()) View.VISIBLE else View.GONE
+        mVenueDescriptionEditText.visibility = if (mVenue.description.isNullOrEmpty()) View.GONE else View.VISIBLE
+        mVenueDescriptionEditText.isEnabled = false
         mDeleteImageButton.visibility = View.GONE
         mEditImageButton.visibility = View.VISIBLE
         mDoneImageButton.visibility = View.GONE
     }
 
     private fun switchToEdit() {
-        mVenueNameEditText.visibility = View.VISIBLE
-        mTitleTextView.visibility = View.GONE
+        mVenueNameEditText.visibility = if (mIsNew) View.VISIBLE else View.GONE
+        mTitleTextView.visibility = if (mIsNew) View.GONE else View.VISIBLE
         mVenueDescriptionEditText.visibility = View.VISIBLE
         mNoDescriptionTextView.visibility = View.GONE
-
+        mVenueDescriptionEditText.isEnabled = true
         mDeleteImageButton.visibility = View.GONE
         mEditImageButton.visibility = View.GONE
         mDoneImageButton.visibility = View.VISIBLE
@@ -108,6 +120,27 @@ class VenueDialogFragment : AppCompatDialogFragment() {
         mDoneImageButton = contentView.findViewById(R.id.done_image_button)
     }
 
+    private fun fillViews(savedInstanceState: Bundle?) {
+        mTitleTextView.text = mVenue.name
+        mVenueDescriptionEditText.setText(mVenue.description)
+        mEditImageButton.setOnClickListener {
+            switchToEdit()
+            mVenueNameEditText.setText(mVenue.name)
+            mVenueDescriptionEditText.setText(mVenue.description)
+        }
+
+        mDoneImageButton.setOnClickListener {
+            if (mIsNew) {
+                mOnVenueEventsListener!!.onCreate(mVenue.copy(name = mVenueNameEditText.text.toString(),
+                        description = mVenueDescriptionEditText.text.toString()))
+            } else {
+                mOnVenueEventsListener!!.onUpdate(mVenue.copy(
+                        description = mVenueDescriptionEditText.text.toString()))
+            }
+            dismiss()
+        }
+    }
+
     companion object {
 
         private const val ARG_VENUE = "ARG_VENUE"
@@ -127,7 +160,7 @@ class VenueDialogFragment : AppCompatDialogFragment() {
             val dialog = activity.supportFragmentManager.findFragmentByTag(TAG)
             if (dialog == null) {
                 activity.supportFragmentManager.beginTransaction()
-                        .add(VenueDialogFragment.newInstance(venue, null, null), TAG)
+                        .add(newInstance(venue, null, null), TAG)
                         .commitAllowingStateLoss()
             }
         }
@@ -146,7 +179,7 @@ class VenueDialogFragment : AppCompatDialogFragment() {
             val dialog = activity.supportFragmentManager.findFragmentByTag(TAG)
             if (dialog == null) {
                 activity.supportFragmentManager.beginTransaction()
-                        .add(VenueDialogFragment.newInstance(null, latitude, longitude), TAG)
+                        .add(newInstance(null, latitude, longitude), TAG)
                         .commitAllowingStateLoss()
             }
         }

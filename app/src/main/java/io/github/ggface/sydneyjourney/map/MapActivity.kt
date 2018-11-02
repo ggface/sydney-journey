@@ -12,8 +12,9 @@ import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import io.github.ggface.sydneyjourney.BuildConfig
 import io.github.ggface.sydneyjourney.R
-import io.github.ggface.sydneyjourney.VenueDialogFragment
 import io.github.ggface.sydneyjourney.api.pojo.Venue
+import io.github.ggface.sydneyjourney.dialog.OnVenueEventsListener
+import io.github.ggface.sydneyjourney.dialog.VenueDialogFragment
 import io.github.ggface.sydneyjourney.list.ListActivity
 import io.github.ggface.sydneyjourney.repository
 import kotlinx.android.synthetic.main.activity_map.*
@@ -25,7 +26,7 @@ import kotlinx.android.synthetic.main.mapbox_mapview_internal.view.*
  *
  * @author Ivan Novikov on 2018-10-15.
  */
-class MapActivity : AppCompatActivity(), MapContract.View {
+class MapActivity : AppCompatActivity(), MapContract.View, OnVenueEventsListener {
 
     private lateinit var mPresenter: MapPresenter
     private var mMap: MapboxMap? = null
@@ -92,8 +93,21 @@ class MapActivity : AppCompatActivity(), MapContract.View {
     override fun onVenuesChanged(venues: List<Venue>) {
         makeBunch(venues)
     }
-
     //endregion MapContract.View
+
+    //region OnVenueEventsListener
+    override fun onUpdate(venue: Venue) {
+        mPresenter.updateVenue(venue)
+    }
+
+    override fun onDelete(venue: Venue) {
+        mPresenter.deleteVenue(venue)
+    }
+
+    override fun onCreate(venue: Venue) {
+        mPresenter.createVenue(venue)
+    }
+    //endregion OnVenueEventsListener
 
     private fun initToolbar() {
         toolbar.inflateMenu(R.menu.menu_main)
@@ -125,6 +139,8 @@ class MapActivity : AppCompatActivity(), MapContract.View {
         if (mMap == null) {
             throw IllegalStateException("MapBox Map must be ready")
         }
+
+        mMap!!.clear()
         val latLngBounds = LatLngBounds.Builder()
         for (venue in venues) {
             mMap!!.addMarker(VenueMarkerOptions(venue))

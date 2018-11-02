@@ -39,5 +39,11 @@ interface MapContract {
          * Get venues
          */
         fun obtainVenues()
+
+        fun createVenue(venue: Venue)
+
+        fun updateVenue(venue: Venue)
+
+        fun deleteVenue(venue: Venue)
     }
 }

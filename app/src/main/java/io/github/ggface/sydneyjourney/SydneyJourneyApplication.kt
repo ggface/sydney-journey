@@ -2,15 +2,12 @@ package io.github.ggface.sydneyjourney
 
 import android.app.Application
 import android.os.StrictMode
-
 import io.github.ggface.sydneyjourney.api.RemoteRepository
 import io.github.ggface.sydneyjourney.api.Repository
 import io.github.ggface.sydneyjourney.api.RetrofitApi
 import timber.log.Timber
 
 /**
- * Предназначение
- *
  * @author Ivan Novikov on 2018-10-15.
  */
 class SydneyJourneyApplication : Application() {
@@ -21,8 +18,14 @@ class SydneyJourneyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         initTimber()
-        mRetrofitApi = RetrofitApi()
-        remoteRepository = Repository(mRetrofitApi!!.venuesRemoteApi)
+
+//        Single.just(this).observeOn(Schedulers.io())
+//                .subscribe( {
+
+                    mRetrofitApi = RetrofitApi()
+                    remoteRepository = Repository(this, mRetrofitApi.venuesRemoteApi)
+//                }, {t -> Timber.tag("").d(t.message) })
+
     }
 
     private fun initTimber() {

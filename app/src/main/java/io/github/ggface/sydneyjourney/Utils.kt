@@ -8,6 +8,12 @@ import io.github.ggface.sydneyjourney.api.RemoteRepository
  *
  * @author Ivan Novikov on 2018-10-24.
  */
+
+object Consts {
+
+    const val EXTRA_VENUE = "EXTRA_VENUE"
+}
+
 fun Activity.repository(): RemoteRepository {
     return (this.application as SydneyJourneyApplication).remoteRepository
 }

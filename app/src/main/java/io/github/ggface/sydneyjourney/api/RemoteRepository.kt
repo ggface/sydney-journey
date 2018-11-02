@@ -5,8 +5,6 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 
 /**
- * Предназначение
- *
  * @author Ivan Novikov on 2018-10-15.
  */
 interface RemoteRepository {
@@ -14,4 +12,10 @@ interface RemoteRepository {
     fun obtainVenues(): Completable
 
     fun venues(): Flowable<List<Venue>>
+
+    fun createVenue(venue: Venue): Completable
+
+    fun updateVenue(venue: Venue): Completable
+
+    fun deleteVenue(venue: Venue): Completable
 }
