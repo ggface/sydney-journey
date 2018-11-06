@@ -9,5 +9,6 @@
     <string name="dialog_edit_venue">Edit venue</string>
     <string name="dialog_edit_done">Done</string>
     <string name="dialog_no_description_stub">Press Edit to add some description</string>
+    <string name="dialog_name_error">Enter name to create new venue</string>
     <!--endregion Venue Dialog-->
 </resources>

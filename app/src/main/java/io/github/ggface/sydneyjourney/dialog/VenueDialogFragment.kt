@@ -9,10 +9,7 @@ import android.support.v4.app.FragmentActivity
 import android.support.v7.app.AppCompatDialogFragment
 import android.view.View
 import android.view.WindowManager
-import android.widget.EditText
-import android.widget.FrameLayout
-import android.widget.ImageButton
-import android.widget.TextView
+import android.widget.*
 import io.github.ggface.sydneyjourney.R
 import io.github.ggface.sydneyjourney.api.pojo.Venue
 
@@ -71,7 +68,7 @@ class VenueDialogFragment : AppCompatDialogFragment() {
         }
 
         initCallback(contentView)
-        fillViews(savedInstanceState)
+        fillViews()
         return bottomSheetDialog
     }
 
@@ -98,7 +95,7 @@ class VenueDialogFragment : AppCompatDialogFragment() {
         mVenueDescriptionEditText.visibility = View.VISIBLE
         mNoDescriptionTextView.visibility = View.GONE
         mVenueDescriptionEditText.isEnabled = true
-        mDeleteImageButton.visibility = View.GONE
+        mDeleteImageButton.visibility = if (mIsNew) View.GONE else View.VISIBLE
         mEditImageButton.visibility = View.GONE
         mDoneImageButton.visibility = View.VISIBLE
     }
@@ -120,7 +117,7 @@ class VenueDialogFragment : AppCompatDialogFragment() {
         mDoneImageButton = contentView.findViewById(R.id.done_image_button)
     }
 
-    private fun fillViews(savedInstanceState: Bundle?) {
+    private fun fillViews() {
         mTitleTextView.text = mVenue.name
         mVenueDescriptionEditText.setText(mVenue.description)
         mEditImageButton.setOnClickListener {
@@ -131,14 +128,29 @@ class VenueDialogFragment : AppCompatDialogFragment() {
 
         mDoneImageButton.setOnClickListener {
             if (mIsNew) {
-                mOnVenueEventsListener!!.onCreate(mVenue.copy(name = mVenueNameEditText.text.toString(),
-                        description = mVenueDescriptionEditText.text.toString()))
+                if (isValidName()) {
+                    mOnVenueEventsListener!!.onCreate(mVenue.copy(
+                            name = mVenueNameEditText.text.toString(),
+                            description = mVenueDescriptionEditText.text.toString()))
+                    dismiss()
+                } else {
+                    Toast.makeText(activity, R.string.dialog_name_error, Toast.LENGTH_SHORT).show()
+                }
             } else {
                 mOnVenueEventsListener!!.onUpdate(mVenue.copy(
                         description = mVenueDescriptionEditText.text.toString()))
+                dismiss()
             }
+        }
+
+        mDeleteImageButton.setOnClickListener {
+            mOnVenueEventsListener!!.onDelete(mVenue)
             dismiss()
         }
+    }
+
+    private fun isValidName(): Boolean {
+        return mVenueNameEditText.text.toString().isNotEmpty()
     }
 
     companion object {

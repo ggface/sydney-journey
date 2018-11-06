@@ -1,4 +1,4 @@
-package io.totalcoin.ui
+package io.github.ggface.sydneyjourney.mvp
 
 /**
  * Base presenter

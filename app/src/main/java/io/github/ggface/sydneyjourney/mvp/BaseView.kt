@@ -1,4 +1,4 @@
-package io.totalcoin.ui
+package io.github.ggface.sydneyjourney.mvp
 
 /**
  * Base view
@@ -12,5 +12,5 @@ interface BaseView {
      *
      * @param message error message
      */
-    fun showError(message: String)
+    fun showError(message: String?)
 }

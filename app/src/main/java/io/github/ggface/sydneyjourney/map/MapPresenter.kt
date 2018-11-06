@@ -1,26 +1,33 @@
-package io.github.ggface.sydneyjourney.list
+package io.github.ggface.sydneyjourney.map
 
 import io.github.ggface.sydneyjourney.api.RemoteRepository
 import io.github.ggface.sydneyjourney.api.pojo.Venue
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.BiFunction
+import io.reactivex.processors.BehaviorProcessor
 
 /**
- * Presenter of Venues List Screen
+ * Presenter of Map Screen
  *
- * @author Ivan Novikov on 2018-10-24.
+ * @author Ivan Novikov on 2018-10-26.
  */
-class ListPresenter(private val view: ListContract.View,
-                    private val remoteRepository: RemoteRepository) : ListContract.Presenter {
+class MapPresenter internal constructor(private val view: MapContract.View,
+                                        private val remoteRepository: RemoteRepository) : MapContract.Presenter {
 
     private val mCompositeDisposable = CompositeDisposable()
+    private val mMapWaitingProcessor = BehaviorProcessor.create<Int>()
+
+    override fun onMapReady() {
+        mMapWaitingProcessor.onNext(1)
+    }
 
     override fun loadVenues() {
         view.onLoadingChanged(true)
         mCompositeDisposable.add(remoteRepository.obtainVenues()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ view.onLoadingChanged(false) },
-                        { view.onLoadingChanged(false) }))
+                        { t -> view.onLoadingChanged(false) }))
     }
 
     override fun createVenue(venue: Venue) {
@@ -49,6 +56,7 @@ class ListPresenter(private val view: ListContract.View,
 
     override fun subscribe() {
         mCompositeDisposable.add(remoteRepository.venues()
+                .withLatestFrom(mMapWaitingProcessor, BiFunction<List<Venue>, Int, List<Venue>> { t1, _ -> t1 })
                 .distinctUntilChanged()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { view.onVenuesChanged(it) })

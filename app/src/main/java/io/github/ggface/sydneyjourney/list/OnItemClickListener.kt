@@ -1,11 +1,11 @@
-package io.github.ggface.sydneyjourney.list;
+package io.github.ggface.sydneyjourney.list
 
 /**
  * Common item click listener
  *
  * @author Ivan Novikov on 2018-10-26.
  */
-public interface OnItemClickListener<T> {
+interface OnItemClickListener<T> {
 
     /**
      * Notify click
@@ -13,5 +13,5 @@ public interface OnItemClickListener<T> {
      * @param element  element
      * @param position adapter position
      */
-    void onItemClick(T element, int position);
+    fun onItemClick(element: T, position: Int)
 }

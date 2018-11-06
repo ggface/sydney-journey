@@ -24,7 +24,7 @@ class ListActivity : AppCompatActivity(), ListContract.View, OnVenueEventsListen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
-        initRecyclerView()
+        initViews()
         mPresenter = ListPresenter(this, repository())
     }
 
@@ -48,30 +48,34 @@ class ListActivity : AppCompatActivity(), ListContract.View, OnVenueEventsListen
         mAdapter.setItems(venues)
     }
 
-    override fun showError(message: String) {
+    override fun showError(message: String?) {
         Toast.makeText(applicationContext, "error=$message", Toast.LENGTH_SHORT).show()
     }
     //endregion ListContract.View
 
     //region OnVenueEventsListener
     override fun onUpdate(venue: Venue) {
-//        mPresenter.updateVenue(venue)
+        mPresenter.updateVenue(venue)
     }
 
     override fun onDelete(venue: Venue) {
-//        mPresenter.deleteVenue(venue)
+        mPresenter.deleteVenue(venue)
     }
 
     override fun onCreate(venue: Venue) {
-//        mPresenter.createVenue(venue)
+        mPresenter.createVenue(venue)
     }
     //endregion OnVenueEventsListener
 
-    private fun initRecyclerView() {
-        mAdapter = VenuesAdapter(OnItemClickListener { venue, _ ->
-            VenueDialogFragment.openActivateDialog(this, venue)
+    private fun initViews() {
+        toolbar.setNavigationOnClickListener { onBackPressed() }
+        mAdapter = VenuesAdapter(object : OnItemClickListener<Venue> {
+            override fun onItemClick(element: Venue, position: Int) {
+                VenueDialogFragment.openActivateDialog(this@ListActivity, element)
+            }
         })
-
         venues_recycler_view.adapter = mAdapter
+
+        swipe_refresh_layout.setOnRefreshListener { mPresenter.loadVenues() }
     }
 }

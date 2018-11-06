@@ -1,8 +1,8 @@
 package io.github.ggface.sydneyjourney.map
 
 import io.github.ggface.sydneyjourney.api.pojo.Venue
-import io.totalcoin.ui.BasePresenter
-import io.totalcoin.ui.BaseView
+import io.github.ggface.sydneyjourney.mvp.BasePresenter
+import io.github.ggface.sydneyjourney.mvp.BaseView
 
 /**
  * Contract of Map Screen
@@ -38,12 +38,21 @@ interface MapContract {
         /**
          * Get venues
          */
-        fun obtainVenues()
+        fun loadVenues()
 
+        /**
+         * Create new venue
+         */
         fun createVenue(venue: Venue)
 
+        /**
+         * Change venue
+         */
         fun updateVenue(venue: Venue)
 
+        /**
+         * Delete venue
+         */
         fun deleteVenue(venue: Venue)
     }
 }

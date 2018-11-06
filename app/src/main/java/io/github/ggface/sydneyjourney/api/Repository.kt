@@ -34,7 +34,7 @@ class Repository(context: Context,
                 BiFunction<List<Venue>, List<Venue>, List<Venue>> { t1, t2 -> foo(t1, t2) })
                 .firstOrError()
                 .doOnSuccess { mVenuesProcessor.onNext(it) }
-                .doOnError { t -> Timber.tag("sys_rest").d("obtainVenues() -> %s", t) }
+                .doOnError { t -> Timber.tag("sys_rest").d("loadVenues() -> %s", t) }
                 .subscribeOn(Schedulers.io())
                 .toCompletable()
     }

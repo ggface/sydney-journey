@@ -81,8 +81,7 @@ class MapActivity : AppCompatActivity(), MapContract.View, OnVenueEventsListener
     //endregion Lifecycle
 
     //region MapContract.View
-
-    override fun showError(message: String) {
+    override fun showError(message: String?) {
         Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
     }
 
