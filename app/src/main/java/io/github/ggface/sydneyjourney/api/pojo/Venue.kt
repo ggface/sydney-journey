@@ -15,7 +15,8 @@ import kotlinx.android.parcel.Parcelize
  */
 @Parcelize
 @Entity(tableName = "venues", indices = arrayOf(Index(value = arrayOf("name"), unique = true)))
-data class Venue(@PrimaryKey @ColumnInfo(name = "name") @SerializedName("name") val name: String,
-                 @ColumnInfo(name = "latitude") @SerializedName("lat") val latitude: Double,
-                 @ColumnInfo(name = "longitude") @SerializedName("lng") val longitude: Double,
-                 @ColumnInfo(name = "description") val description: String?) : Parcelable
+data class Venue(@field:PrimaryKey @field:ColumnInfo(name = "name") @SerializedName("name") val name: String,
+                 @field:ColumnInfo(name = "latitude") @SerializedName("lat") val latitude: Double,
+                 @field:ColumnInfo(name = "longitude") @SerializedName("lng") val longitude: Double,
+                 @field:ColumnInfo(name = "description") val description: String?,
+                 val isManual: Boolean) : Parcelable

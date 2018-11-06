@@ -60,7 +60,7 @@ class VenueDialogFragment : AppCompatDialogFragment() {
 
         if (venue == null) {
             mIsNew = true
-            mVenue = Venue("", arguments!!.getDouble(ARG_LAT), arguments!!.getDouble(ARG_LON), null)
+            mVenue = Venue("", arguments!!.getDouble(ARG_LAT), arguments!!.getDouble(ARG_LON), null, true)
             switchToEdit()
         } else {
             mVenue = venue
@@ -95,7 +95,7 @@ class VenueDialogFragment : AppCompatDialogFragment() {
         mVenueDescriptionEditText.visibility = View.VISIBLE
         mNoDescriptionTextView.visibility = View.GONE
         mVenueDescriptionEditText.isEnabled = true
-        mDeleteImageButton.visibility = if (mIsNew) View.GONE else View.VISIBLE
+        mDeleteImageButton.visibility = if (!mIsNew && mVenue.isManual) View.VISIBLE else View.GONE
         mEditImageButton.visibility = View.GONE
         mDoneImageButton.visibility = View.VISIBLE
     }
@@ -137,8 +137,15 @@ class VenueDialogFragment : AppCompatDialogFragment() {
                     Toast.makeText(activity, R.string.dialog_name_error, Toast.LENGTH_SHORT).show()
                 }
             } else {
-                mOnVenueEventsListener!!.onUpdate(mVenue.copy(
-                        description = mVenueDescriptionEditText.text.toString()))
+                if (mVenue.isManual) {
+                    mOnVenueEventsListener!!.onUpdate(mVenue.copy(
+                            description = mVenueDescriptionEditText.text.toString()))
+                } else {
+                    mOnVenueEventsListener!!.onCreate(mVenue.copy(
+                            name = mVenueNameEditText.text.toString(),
+                            description = mVenueDescriptionEditText.text.toString()))
+                }
+
                 dismiss()
             }
         }
@@ -167,8 +174,8 @@ class VenueDialogFragment : AppCompatDialogFragment() {
          * @param activity Activity
          * @param venue    Venue
          */
-        fun openActivateDialog(activity: FragmentActivity,
-                               venue: Venue) {
+        fun openDialog(activity: FragmentActivity,
+                       venue: Venue) {
             val dialog = activity.supportFragmentManager.findFragmentByTag(TAG)
             if (dialog == null) {
                 activity.supportFragmentManager.beginTransaction()
@@ -178,16 +185,16 @@ class VenueDialogFragment : AppCompatDialogFragment() {
         }
 
         /**
-         * Entry point. Shows venue dialog.
+         * Entry point for creating the venue. Shows venue dialog.
          *
          * @param activity  Activity
          * @param latitude  Location latitude
          * @param longitude Location longitude
          */
         @JvmStatic
-        fun openActivateDialog(activity: FragmentActivity,
-                               latitude: Double,
-                               longitude: Double?) {
+        fun openDialog(activity: FragmentActivity,
+                       latitude: Double,
+                       longitude: Double?) {
             val dialog = activity.supportFragmentManager.findFragmentByTag(TAG)
             if (dialog == null) {
                 activity.supportFragmentManager.beginTransaction()

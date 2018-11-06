@@ -125,9 +125,9 @@ class MapActivity : AppCompatActivity(), MapContract.View, OnVenueEventsListener
     }
 
     private fun initMap(map: MapboxMap) {
-        map.addOnMapLongClickListener { VenueDialogFragment.openActivateDialog(MapActivity@ this, it.latitude, it.longitude) }
+        map.addOnMapLongClickListener { VenueDialogFragment.openDialog(MapActivity@ this, it.latitude, it.longitude) }
         map.setOnMarkerClickListener {
-            VenueDialogFragment.openActivateDialog(MapActivity@ this, (it as VenueMarker).venue)
+            VenueDialogFragment.openDialog(MapActivity@ this, (it as VenueMarker).venue)
             true
         }
         mMap = map

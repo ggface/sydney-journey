@@ -31,7 +31,7 @@ class Repository(context: Context,
     override fun obtainVenues(): Completable {
         return Flowable.combineLatest(getRemoteVenues().toFlowable(),
                 getDatabaseVenues().toFlowable(),
-                BiFunction<List<Venue>, List<Venue>, List<Venue>> { t1, t2 -> foo(t1, t2) })
+                BiFunction<List<Venue>, List<Venue>, List<Venue>> { t1, t2 -> splitVenues(t1, t2) })
                 .firstOrError()
                 .doOnSuccess { mVenuesProcessor.onNext(it) }
                 .doOnError { t -> Timber.tag("sys_rest").d("loadVenues() -> %s", t) }
@@ -88,10 +88,17 @@ class Repository(context: Context,
         return Single.create<List<Venue>> { it.onSuccess(localDatabase.venueDAO().all) }
     }
 
-    private fun foo(list1: List<Venue>, list2: List<Venue>): List<Venue> {
+    private fun splitVenues(remoteVenues: List<Venue>, databaseVenues: List<Venue>): List<Venue> {
         val newList = ArrayList<Venue>()
-        newList.addAll(list1)
-        newList.addAll(list2)
+        newList.addAll(databaseVenues)
+
+        val unchangedVenues = ArrayList<Venue>()
+        for (venue in remoteVenues) {
+            if (databaseVenues.find { it.name == venue.name } == null) {
+                unchangedVenues.add(venue)
+            }
+        }
+        newList.addAll(unchangedVenues)
         return newList
     }
 }

@@ -27,7 +27,10 @@ class MapPresenter internal constructor(private val view: MapContract.View,
         mCompositeDisposable.add(remoteRepository.obtainVenues()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ view.onLoadingChanged(false) },
-                        { t -> view.onLoadingChanged(false) }))
+                        { t ->
+                            view.onLoadingChanged(false)
+                            view.showError(t.message)
+                        }))
     }
 
     override fun createVenue(venue: Venue) {

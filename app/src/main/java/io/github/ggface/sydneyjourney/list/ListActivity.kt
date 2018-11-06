@@ -71,11 +71,10 @@ class ListActivity : AppCompatActivity(), ListContract.View, OnVenueEventsListen
         toolbar.setNavigationOnClickListener { onBackPressed() }
         mAdapter = VenuesAdapter(object : OnItemClickListener<Venue> {
             override fun onItemClick(element: Venue, position: Int) {
-                VenueDialogFragment.openActivateDialog(this@ListActivity, element)
+                VenueDialogFragment.openDialog(this@ListActivity, element)
             }
         })
         venues_recycler_view.adapter = mAdapter
-
         swipe_refresh_layout.setOnRefreshListener { mPresenter.loadVenues() }
     }
 }
