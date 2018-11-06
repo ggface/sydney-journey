@@ -6,7 +6,7 @@ import org.junit.Before
 import org.junit.Test
 
 /**
- * Предназначение
+ * Testing [Venue]
  *
  * @author Ivan Novikov on 2018-11-06.
  */
