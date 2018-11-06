@@ -2,6 +2,7 @@ package io.github.ggface.sydneyjourney
 
 import android.app.Application
 import android.os.StrictMode
+import io.github.ggface.sydneyjourney.Consts.LOG_SYSTEM
 import io.github.ggface.sydneyjourney.api.RemoteRepository
 import io.github.ggface.sydneyjourney.api.Repository
 import io.github.ggface.sydneyjourney.api.RetrofitApi
@@ -25,7 +26,7 @@ class SydneyJourneyApplication : Application() {
                 .subscribe({
                     mRetrofitApi = RetrofitApi()
                     remoteRepository = Repository(this, mRetrofitApi.venuesRemoteApi)
-                }, { t -> Timber.tag("").d(t.message) })
+                }, { t -> Timber.tag(LOG_SYSTEM).d(t.message) })
 
     }
 

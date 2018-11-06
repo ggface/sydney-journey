@@ -11,13 +11,13 @@ import io.github.ggface.sydneyjourney.api.RemoteRepository
 
 object Consts {
 
-    const val EXTRA_VENUE = "EXTRA_VENUE"
+    const val LOG_SYSTEM = "LOG_SYSTEM"
+
+    const val ARG_VENUE = "ARG_VENUE"
+    const val ARG_LAT = "ARG_LAT"
+    const val ARG_LON = "ARG_LON"
 }
 
 fun Activity.repository(): RemoteRepository {
     return (this.application as SydneyJourneyApplication).remoteRepository
-}
-
-fun nonNull(nullableString: String?): String {
-    return nullableString ?: ""
 }

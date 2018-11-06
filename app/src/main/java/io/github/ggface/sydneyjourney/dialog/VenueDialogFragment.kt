@@ -10,6 +10,9 @@ import android.support.v7.app.AppCompatDialogFragment
 import android.view.View
 import android.view.WindowManager
 import android.widget.*
+import io.github.ggface.sydneyjourney.Consts.ARG_LAT
+import io.github.ggface.sydneyjourney.Consts.ARG_LON
+import io.github.ggface.sydneyjourney.Consts.ARG_VENUE
 import io.github.ggface.sydneyjourney.R
 import io.github.ggface.sydneyjourney.api.pojo.Venue
 
@@ -157,14 +160,10 @@ class VenueDialogFragment : AppCompatDialogFragment() {
     }
 
     private fun isValidName(): Boolean {
-        return mVenueNameEditText.text.toString().isNotEmpty()
+        return mVenueNameEditText.text.toString().trim().isNotEmpty()
     }
 
     companion object {
-
-        private const val ARG_VENUE = "ARG_VENUE"
-        private const val ARG_LAT = "ARG_LAT"
-        private const val ARG_LON = "ARG_LON"
 
         private val TAG = VenueDialogFragment::class.java.simpleName
 
