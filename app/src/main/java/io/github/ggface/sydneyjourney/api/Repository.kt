@@ -21,7 +21,6 @@ class Repository(context: Context,
 
     private val localDatabase = Room.databaseBuilder(context,
             LocalDataBase::class.java, "venues_db")
-            .allowMainThreadQueries()
             .build()
     //region RemoteRepository
 
