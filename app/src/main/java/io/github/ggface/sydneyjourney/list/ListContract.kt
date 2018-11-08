@@ -1,5 +1,7 @@
 package io.github.ggface.sydneyjourney.list
 
+import android.location.Location
+import io.github.ggface.sydneyjourney.VenueSorting
 import io.github.ggface.sydneyjourney.api.pojo.Venue
 import io.github.ggface.sydneyjourney.mvp.BasePresenter
 import io.github.ggface.sydneyjourney.mvp.BaseView
@@ -34,6 +36,16 @@ interface ListContract {
          * Get venues
          */
         fun loadVenues()
+
+        /**
+         * Sort venues
+         */
+        fun sortBy(sortBy: VenueSorting)
+
+        /**
+         * Set device position for sorting by distance
+         */
+        fun setCurrentLocation(location: Location)
 
         /**
          * Create new venue

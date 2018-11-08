@@ -27,7 +27,6 @@ class SydneyJourneyApplication : Application() {
                     mRetrofitApi = RetrofitApi()
                     remoteRepository = Repository(this, mRetrofitApi.venuesRemoteApi)
                 }, { t -> Timber.tag(LOG_SYSTEM).d(t.message) })
-
     }
 
     private fun initTimber() {

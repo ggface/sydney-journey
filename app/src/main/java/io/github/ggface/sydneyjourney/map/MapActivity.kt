@@ -1,8 +1,8 @@
 package io.github.ggface.sydneyjourney.map
 
 import android.content.Intent
+import android.location.Location
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Toast
 import com.mapbox.mapboxsdk.Mapbox
@@ -16,9 +16,9 @@ import io.github.ggface.sydneyjourney.api.pojo.Venue
 import io.github.ggface.sydneyjourney.dialog.OnVenueEventsListener
 import io.github.ggface.sydneyjourney.dialog.VenueDialogFragment
 import io.github.ggface.sydneyjourney.list.ListActivity
+import io.github.ggface.sydneyjourney.mvp.BaseActivity
 import io.github.ggface.sydneyjourney.repository
 import kotlinx.android.synthetic.main.activity_map.*
-import kotlinx.android.synthetic.main.mapbox_mapview_internal.view.*
 
 
 /**
@@ -26,7 +26,7 @@ import kotlinx.android.synthetic.main.mapbox_mapview_internal.view.*
  *
  * @author Ivan Novikov on 2018-10-15.
  */
-class MapActivity : AppCompatActivity(), MapContract.View, OnVenueEventsListener {
+class MapActivity : BaseActivity(), MapContract.View, OnVenueEventsListener {
 
     private lateinit var mPresenter: MapPresenter
     private var mMap: MapboxMap? = null
@@ -37,7 +37,6 @@ class MapActivity : AppCompatActivity(), MapContract.View, OnVenueEventsListener
         Mapbox.getInstance(this, BuildConfig.MAPKIT_API_KEY)
         setContentView(R.layout.activity_map)
         map_view.onCreate(savedInstanceState)
-        initToolbar()
         initViews()
         mPresenter = MapPresenter(this, repository())
     }
@@ -91,6 +90,7 @@ class MapActivity : AppCompatActivity(), MapContract.View, OnVenueEventsListener
 
     override fun onVenuesChanged(venues: List<Venue>) {
         makeBunch(venues)
+        moveCameraToVenues(venues)
     }
     //endregion MapContract.View
 
@@ -108,20 +108,23 @@ class MapActivity : AppCompatActivity(), MapContract.View, OnVenueEventsListener
     }
     //endregion OnVenueEventsListener
 
-    private fun initToolbar() {
-        toolbar.inflateMenu(R.menu.menu_main)
-        toolbar.setOnMenuItemClickListener {
-            if (it.itemId == R.id.menu_action_list) {
-                startActivity(Intent(this, ListActivity::class.java))
-            }
-            true
-        }
+    override fun onLocationChanged(location: Location) {
+        val userLocation = LatLng(location.latitude, location.longitude)
+        mMap!!.easeCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 10.0))
     }
 
     private fun initViews() {
+        list_button.setOnClickListener { startActivity(Intent(this, ListActivity::class.java)) }
+        venues_button.setOnClickListener {
+            val venues = ArrayList<Venue>()
+            for (marker in mMap!!.markers) {
+                venues.add((marker as VenueMarker).venue)
+            }
+            moveCameraToVenues(venues)
+        }
+        location_button.setOnClickListener { obtainLocation() }
         progress_bar.visibility = View.INVISIBLE
         map_view.getMapAsync { initMap(it) }
-        map_view.compassView.visibility = View.GONE
     }
 
     private fun initMap(map: MapboxMap) {
@@ -140,12 +143,17 @@ class MapActivity : AppCompatActivity(), MapContract.View, OnVenueEventsListener
         }
 
         mMap!!.clear()
-        val latLngBounds = LatLngBounds.Builder()
+
         for (venue in venues) {
             mMap!!.addMarker(VenueMarkerOptions(venue))
+        }
+    }
+
+    private fun moveCameraToVenues(venues: List<Venue>) {
+        val latLngBounds = LatLngBounds.Builder()
+        for (venue in venues) {
             latLngBounds.include(LatLng(venue.latitude, venue.longitude))
         }
-
         mMap!!.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds.build(), 250), 500)
     }
 }

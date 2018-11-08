@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:padding="@dimen/view_padding"
+    tools:ignore="RtlHardcoded,RtlSymmetry">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@id/close_image_button"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/view_padding"
+        android:text="@string/dialog_location_access_title"
+        android:textAllCaps="true"
+        android:textSize="18sp"/>
+
+    <ImageButton
+        android:id="@+id/close_image_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentRight="true"
+        android:background="@null"
+        android:contentDescription="@string/dialog_location_access_close"
+        android:src="@drawable/ic_action_close"/>
+
+    <TextView
+        android:id="@+id/text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/close_image_button"
+        android:paddingBottom="16dp"
+        android:paddingLeft="@dimen/view_padding"
+        android:paddingRight="@dimen/view_padding"
+        android:text="@string/dialog_location_access_text"
+        android:textSize="18sp"/>
+
+    <Button
+        android:id="@+id/allow_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_view"
+        android:text="@string/dialog_location_access_ok"/>
+
+    <Button
+        android:id="@+id/cancel_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/allow_button"
+        android:text="@string/dialog_location_access_cancel"/>
+</RelativeLayout>

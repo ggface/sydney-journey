@@ -1,12 +1,17 @@
 package io.github.ggface.sydneyjourney.list
 
+import android.content.Context
+import android.location.Location
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
+import io.github.ggface.sydneyjourney.Consts
+import io.github.ggface.sydneyjourney.Consts.KEY_SORTING
 import io.github.ggface.sydneyjourney.R
+import io.github.ggface.sydneyjourney.VenueSorting
 import io.github.ggface.sydneyjourney.api.pojo.Venue
 import io.github.ggface.sydneyjourney.dialog.OnVenueEventsListener
 import io.github.ggface.sydneyjourney.dialog.VenueDialogFragment
+import io.github.ggface.sydneyjourney.mvp.BaseActivity
 import io.github.ggface.sydneyjourney.repository
 import kotlinx.android.synthetic.main.activity_list.*
 
@@ -15,17 +20,19 @@ import kotlinx.android.synthetic.main.activity_list.*
  *
  * @author Ivan Novikov on 2018-10-22.
  */
-class ListActivity : AppCompatActivity(), ListContract.View, OnVenueEventsListener {
+class ListActivity : BaseActivity(), ListContract.View, OnVenueEventsListener {
 
-    lateinit var mPresenter: ListContract.Presenter
-    lateinit var mAdapter: VenuesAdapter
+    private lateinit var mPresenter: ListContract.Presenter
+    private lateinit var mAdapter: VenuesAdapter
 
     //region Lifecycle
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
+        initToolbar()
         initViews()
-        mPresenter = ListPresenter(this, repository())
+
+        mPresenter = ListPresenter(this, repository(), VenueSorting.BY_NAME)
     }
 
     override fun onStart() {
@@ -67,6 +74,43 @@ class ListActivity : AppCompatActivity(), ListContract.View, OnVenueEventsListen
     }
     //endregion OnVenueEventsListener
 
+    override fun onLocationChanged(location: Location) {
+        super.onLocationChanged(location)
+        mPresenter.setCurrentLocation(location)
+        if (getVenueSorting() == VenueSorting.BY_DISTANCE) {
+            mPresenter.sortBy(VenueSorting.BY_DISTANCE)
+        }
+    }
+
+    override fun onGeoAccessDenied() {
+        super.onGeoAccessDenied()
+        onLoadingChanged(false)
+    }
+
+    private fun initToolbar() {
+        toolbar.inflateMenu(R.menu.menu_list)
+        toolbar.setOnMenuItemClickListener {
+            var sorting: VenueSorting? = null
+            when (it.itemId) {
+                R.id.menu_action_az -> sorting = VenueSorting.BY_NAME
+                R.id.menu_action_za -> sorting = VenueSorting.BY_NAME_REVERS
+                R.id.menu_action_distance -> {
+                    sorting = VenueSorting.BY_DISTANCE
+                    onLoadingChanged(true)
+                    obtainLocation()
+                }
+            }
+
+            if (sorting != null) {
+                setVenueSorting(sorting)
+                if (sorting != VenueSorting.BY_DISTANCE) {
+                    mPresenter.sortBy(sorting)
+                }
+            }
+            true
+        }
+    }
+
     private fun initViews() {
         toolbar.setNavigationOnClickListener { onBackPressed() }
         mAdapter = VenuesAdapter(object : OnItemClickListener<Venue> {
@@ -76,5 +120,20 @@ class ListActivity : AppCompatActivity(), ListContract.View, OnVenueEventsListen
         })
         venues_recycler_view.adapter = mAdapter
         swipe_refresh_layout.setOnRefreshListener { mPresenter.loadVenues() }
+    }
+
+    private fun getVenueSorting(): VenueSorting {
+        val preferences = getSharedPreferences(Consts.PREFERENCES, Context.MODE_PRIVATE)
+        val sortingType = try {
+            preferences.getString(KEY_SORTING, VenueSorting.BY_NAME.name)
+        } catch (ignore: ClassCastException) {
+            VenueSorting.BY_NAME.name
+        }
+        return VenueSorting.valueOf(sortingType)
+    }
+
+    private fun setVenueSorting(sorting: VenueSorting) {
+        val preferences = getSharedPreferences(Consts.PREFERENCES, Context.MODE_PRIVATE)
+        preferences.edit().putString(KEY_SORTING, sorting.name).apply()
     }
 }

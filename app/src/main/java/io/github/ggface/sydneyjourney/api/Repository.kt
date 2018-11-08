@@ -1,7 +1,14 @@
 package io.github.ggface.sydneyjourney.api
 
+import android.annotation.SuppressLint
 import android.arch.persistence.room.Room
 import android.content.Context
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import android.location.LocationProvider
+import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import io.github.ggface.sydneyjourney.api.database.LocalDataBase
 import io.github.ggface.sydneyjourney.api.pojo.Venue
 import io.reactivex.Completable
@@ -17,11 +24,26 @@ import timber.log.Timber
  */
 class Repository(context: Context,
                  private val venuesRemoteApi: VenuesRemoteApi) : RemoteRepository {
-    private val mVenuesProcessor = BehaviorProcessor.create<List<Venue>>()
 
-    private val localDatabase = Room.databaseBuilder(context,
+    private val mVenuesProcessor = BehaviorProcessor.create<List<Venue>>()
+    private val mLocationProcessor = BehaviorProcessor.create<Location>()
+    private val mLocalDatabase = Room.databaseBuilder(context,
             LocalDataBase::class.java, "venues_db")
             .build()
+    private val mLocationManager = context
+            .getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager
+    private val mLocationListener = object : LocationListener {
+        override fun onLocationChanged(location: Location?) {
+            if (null != location) {
+                mLocationProcessor.onNext(location)
+                disableGeoUpdates()
+            }
+        }
+
+        override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
+        override fun onProviderEnabled(provider: String) {}
+        override fun onProviderDisabled(provider: String) {}
+    }
     //region RemoteRepository
 
     /**
@@ -45,7 +67,7 @@ class Repository(context: Context,
     override fun createVenue(venue: Venue): Completable {
         return Completable.create {
             try {
-                localDatabase.venueDAO().insert(venue)
+                mLocalDatabase.venueDAO().insert(venue)
                 it.onComplete()
             } catch (t: Throwable) {
                 it.onError(t)
@@ -57,7 +79,7 @@ class Repository(context: Context,
     override fun updateVenue(venue: Venue): Completable {
         return Completable.create {
             try {
-                localDatabase.venueDAO().update(venue)
+                mLocalDatabase.venueDAO().update(venue)
                 it.onComplete()
             } catch (t: Throwable) {
                 it.onError(t)
@@ -69,13 +91,40 @@ class Repository(context: Context,
     override fun deleteVenue(venue: Venue): Completable {
         return Completable.create {
             try {
-                localDatabase.venueDAO().delete(venue)
+                mLocalDatabase.venueDAO().delete(venue)
                 it.onComplete()
             } catch (t: Throwable) {
                 it.onError(t)
             }
         }.doOnComplete { obtainVenues().subscribe({}, {}) }
                 .subscribeOn(Schedulers.io())
+    }
+
+    override fun gpsIsEnabled(): Boolean {
+        return mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+    }
+
+    override fun disableGeoUpdates() {
+        mLocationManager.removeUpdates(mLocationListener)
+    }
+
+    @SuppressLint("MissingPermission")
+    override fun lastKnownLocation() {
+        val matchingProviders = mLocationManager.allProviders
+        var lastLocation: Location? = null
+        for (provider in matchingProviders) {
+            val location = mLocationManager.getLastKnownLocation(provider)
+            if (null != location) {
+                lastLocation = location
+                break
+            }
+        }
+
+        if (null != lastLocation) {
+            mLocationProcessor.onNext(lastLocation)
+        } else {
+            singleLocationUpdate()
+        }
     }
     //endregion RemoteRepository
 
@@ -84,7 +133,7 @@ class Repository(context: Context,
     }
 
     private fun getDatabaseVenues(): Single<List<Venue>> {
-        return Single.create<List<Venue>> { it.onSuccess(localDatabase.venueDAO().all) }
+        return Single.create<List<Venue>> { it.onSuccess(mLocalDatabase.venueDAO().all) }
     }
 
     private fun splitVenues(remoteVenues: List<Venue>, databaseVenues: List<Venue>): List<Venue> {
@@ -99,5 +148,21 @@ class Repository(context: Context,
         }
         newList.addAll(unchangedVenues)
         return newList
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun singleLocationUpdate() {
+        var lp: LocationProvider? = mLocationManager.getProvider(LocationManager.NETWORK_PROVIDER)
+        if (null != lp) {
+            mLocationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, mLocationListener, null)
+        }
+        lp = mLocationManager.getProvider(LocationManager.GPS_PROVIDER)
+        if (null != lp) {
+            mLocationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, mLocationListener, null)
+        }
+        lp = mLocationManager.getProvider(LocationManager.PASSIVE_PROVIDER)
+        if (null != lp) {
+            mLocationManager.requestSingleUpdate(LocationManager.PASSIVE_PROVIDER, mLocationListener, null)
+        }
     }
 }

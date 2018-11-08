@@ -28,4 +28,10 @@
         <item name="android:textSize">13sp</item>
         <item name="android:textStyle">normal</item>
     </style>
+
+    <style name="PopupDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorPrimary">@color/white</item>
+        <item name="android:windowBackground">@drawable/background_dialog</item>
+        <item name="android:textViewStyle">@style/TextStyle</item>
+    </style>
 </resources>

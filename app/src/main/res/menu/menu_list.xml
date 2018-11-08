@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_action_list"
+        android:icon="@drawable/ic_action_sort"
+        android:title="@string/list_menu_action_sort"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/menu_action_az"
+                android:title="A-Z"
+                app:showAsAction="always"/>
+            <item
+                android:id="@+id/menu_action_za"
+                android:title="Z-A"
+                app:showAsAction="always"/>
+            <item
+                android:id="@+id/menu_action_distance"
+                android:title="Distance"
+                app:showAsAction="always"/>
+        </menu>
+    </item>
+</menu>

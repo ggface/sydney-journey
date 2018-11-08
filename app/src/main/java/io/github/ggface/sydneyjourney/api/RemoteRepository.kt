@@ -18,4 +18,10 @@ interface RemoteRepository {
     fun updateVenue(venue: Venue): Completable
 
     fun deleteVenue(venue: Venue): Completable
+
+    fun gpsIsEnabled(): Boolean
+
+    fun disableGeoUpdates()
+
+    fun lastKnownLocation()
 }

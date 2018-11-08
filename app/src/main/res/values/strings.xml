@@ -3,6 +3,14 @@
     <string name="menu_action_list">Show list</string>
     <string name="venue_name">Venue name</string>
 
+    <!--region Warning-->
+    <string name="warning_location_denied">You hadn\'t allow use location data</string>
+    <!--endregion Warning-->
+
+    <!--region List Screen-->
+    <string name="list_menu_action_sort">Sort venues</string>
+    <!--endregion List Screen-->
+
     <!--region Venue Dialog-->
     <string name="venue_description">Description</string>
     <string name="dialog_delete_venue">Delete venue</string>
@@ -11,4 +19,12 @@
     <string name="dialog_no_description_stub">Press Edit to add some description</string>
     <string name="dialog_name_error">Enter name to create new venue</string>
     <!--endregion Venue Dialog-->
+
+    <!--region Location Access Dialog-->
+    <string name="dialog_location_access_title">Attention</string>
+    <string name="dialog_location_access_close">Close</string>
+    <string name="dialog_location_access_text">Allow the application to access device location data.</string>
+    <string name="dialog_location_access_ok">Allow</string>
+    <string name="dialog_location_access_cancel">Cancel</string>
+    <!--endregion Location Access Dialog-->
 </resources>
