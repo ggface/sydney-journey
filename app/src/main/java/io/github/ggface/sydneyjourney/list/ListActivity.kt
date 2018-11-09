@@ -92,7 +92,7 @@ class ListActivity : BaseActivity(), ListContract.View, OnVenueEventsListener {
 
     private fun initToolbar() {
         toolbar.inflateMenu(R.menu.menu_list)
-        toolbar.setOnMenuItemClickListener {
+        toolbar.setOnMenuItemClickListener { it ->
             var sorting: VenueSorting? = null
             when (it.itemId) {
                 R.id.menu_action_az -> sorting = VenueSorting.BY_NAME
@@ -103,7 +103,7 @@ class ListActivity : BaseActivity(), ListContract.View, OnVenueEventsListener {
                 }
             }
 
-            if (sorting != null) {
+            sorting?.let {
                 setVenueSorting(sorting)
                 mPresenter.sortBy(sorting)
             }

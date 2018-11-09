@@ -39,9 +39,7 @@ abstract class BaseActivity : AppCompatActivity(), LocationAccessDialogListener 
     override fun onStop() {
         super.onStop()
         repository().disableGeoUpdates()
-        if (mGoogleApiClient != null) {
-            mGoogleApiClient!!.disconnect()
-        }
+        mGoogleApiClient?.disconnect()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

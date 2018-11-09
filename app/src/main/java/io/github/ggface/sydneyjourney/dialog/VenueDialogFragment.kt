@@ -44,19 +44,14 @@ class VenueDialogFragment : AppCompatDialogFragment() {
         val contentView = View.inflate(context, R.layout.dialog_venue, null)
         bottomSheetDialog.setContentView(contentView)
         initViews(contentView)
-
-        if (bottomSheetDialog.window != null) {
-            bottomSheetDialog.window!!.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_UNSPECIFIED)
-        }
+        bottomSheetDialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_UNSPECIFIED)
 
         bottomSheetDialog.setCanceledOnTouchOutside(true)
         bottomSheetDialog.setOnShowListener { dialog ->
             val d = dialog as BottomSheetDialog
 
             val bottomSheet = d.findViewById<FrameLayout>(android.support.design.R.id.design_bottom_sheet)
-            if (bottomSheet != null) {
-                BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
-            }
+            BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
         }
 
         val venue: Venue? = arguments!!.getParcelable(ARG_VENUE)
@@ -105,9 +100,7 @@ class VenueDialogFragment : AppCompatDialogFragment() {
 
     private fun initCallback(contentView: View) {
         val mBottomSheetBehavior = BottomSheetBehavior.from(contentView.parent as View)
-        if (mBottomSheetBehavior != null) {
-            mBottomSheetBehavior.skipCollapsed = false
-        }
+        mBottomSheetBehavior?.skipCollapsed = false
     }
 
     private fun initViews(contentView: View) {
@@ -216,6 +209,7 @@ class VenueDialogFragment : AppCompatDialogFragment() {
             val fragment = VenueDialogFragment()
             val bundle = Bundle()
             bundle.putParcelable(ARG_VENUE, venue)
+
             if (latitude != null && longitude != null) {
                 bundle.putDouble(ARG_LAT, latitude)
                 bundle.putDouble(ARG_LON, longitude)
