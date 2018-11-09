@@ -126,6 +126,10 @@ class Repository(context: Context,
             singleLocationUpdate()
         }
     }
+
+    override fun location(): Flowable<Location> {
+        return mLocationProcessor.onBackpressureLatest()
+    }
     //endregion RemoteRepository
 
     private fun getRemoteVenues(): Single<List<Venue>> {

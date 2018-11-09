@@ -92,6 +92,11 @@ class MapActivity : BaseActivity(), MapContract.View, OnVenueEventsListener {
         makeBunch(venues)
         moveCameraToVenues(venues)
     }
+
+    override fun onLocationChanged(location: Location) {
+        val userLocation = LatLng(location.latitude, location.longitude)
+        mMap!!.easeCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 10.0))
+    }
     //endregion MapContract.View
 
     //region OnVenueEventsListener
@@ -108,11 +113,6 @@ class MapActivity : BaseActivity(), MapContract.View, OnVenueEventsListener {
     }
     //endregion OnVenueEventsListener
 
-    override fun onLocationChanged(location: Location) {
-        val userLocation = LatLng(location.latitude, location.longitude)
-        mMap!!.easeCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 10.0))
-    }
-
     private fun initViews() {
         list_button.setOnClickListener { startActivity(Intent(this, ListActivity::class.java)) }
         venues_button.setOnClickListener {
@@ -122,7 +122,10 @@ class MapActivity : BaseActivity(), MapContract.View, OnVenueEventsListener {
             }
             moveCameraToVenues(venues)
         }
-        location_button.setOnClickListener { obtainLocation() }
+        location_button.setOnClickListener {
+            mPresenter.listenLocation()
+            obtainLocation()
+        }
         progress_bar.visibility = View.INVISIBLE
         map_view.getMapAsync { initMap(it) }
     }

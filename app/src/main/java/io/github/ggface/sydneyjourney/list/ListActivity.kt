@@ -32,7 +32,7 @@ class ListActivity : BaseActivity(), ListContract.View, OnVenueEventsListener {
         initToolbar()
         initViews()
 
-        mPresenter = ListPresenter(this, repository(), VenueSorting.BY_NAME)
+        mPresenter = ListPresenter(this, repository(), getVenueSorting())
     }
 
     override fun onStart() {
@@ -53,6 +53,17 @@ class ListActivity : BaseActivity(), ListContract.View, OnVenueEventsListener {
 
     override fun onVenuesChanged(venues: List<Venue>) {
         mAdapter.setItems(venues)
+        onLoadingChanged(false)
+    }
+
+    override fun onLocationChanged(location: Location) {
+        if (getVenueSorting() == VenueSorting.BY_DISTANCE) {
+            mPresenter.sortBy(VenueSorting.BY_DISTANCE)
+        }
+    }
+
+    override fun onRequiredLocationPermissions() {
+        obtainLocation()
     }
 
     override fun showError(message: String?) {
@@ -74,14 +85,6 @@ class ListActivity : BaseActivity(), ListContract.View, OnVenueEventsListener {
     }
     //endregion OnVenueEventsListener
 
-    override fun onLocationChanged(location: Location) {
-        super.onLocationChanged(location)
-        mPresenter.setCurrentLocation(location)
-        if (getVenueSorting() == VenueSorting.BY_DISTANCE) {
-            mPresenter.sortBy(VenueSorting.BY_DISTANCE)
-        }
-    }
-
     override fun onGeoAccessDenied() {
         super.onGeoAccessDenied()
         onLoadingChanged(false)
@@ -97,15 +100,12 @@ class ListActivity : BaseActivity(), ListContract.View, OnVenueEventsListener {
                 R.id.menu_action_distance -> {
                     sorting = VenueSorting.BY_DISTANCE
                     onLoadingChanged(true)
-                    obtainLocation()
                 }
             }
 
             if (sorting != null) {
                 setVenueSorting(sorting)
-                if (sorting != VenueSorting.BY_DISTANCE) {
-                    mPresenter.sortBy(sorting)
-                }
+                mPresenter.sortBy(sorting)
             }
             true
         }

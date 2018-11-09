@@ -28,6 +28,18 @@ interface ListContract {
          * @param venues venues list
          */
         fun onVenuesChanged(venues: List<Venue>)
+
+        /**
+         * Notify location was changed
+         *
+         * @param location current location
+         */
+        fun onLocationChanged(location: Location)
+
+        /**
+         * Request location permissions if need
+         */
+        fun onRequiredLocationPermissions()
     }
 
     interface Presenter : BasePresenter {
@@ -41,11 +53,6 @@ interface ListContract {
          * Sort venues
          */
         fun sortBy(sortBy: VenueSorting)
-
-        /**
-         * Set device position for sorting by distance
-         */
-        fun setCurrentLocation(location: Location)
 
         /**
          * Create new venue

@@ -1,5 +1,6 @@
 package io.github.ggface.sydneyjourney.api
 
+import android.location.Location
 import io.github.ggface.sydneyjourney.api.pojo.Venue
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -24,4 +25,6 @@ interface RemoteRepository {
     fun disableGeoUpdates()
 
     fun lastKnownLocation()
+
+    fun location(): Flowable<Location>
 }

@@ -1,5 +1,6 @@
 package io.github.ggface.sydneyjourney.map
 
+import android.location.Location
 import io.github.ggface.sydneyjourney.api.pojo.Venue
 import io.github.ggface.sydneyjourney.mvp.BasePresenter
 import io.github.ggface.sydneyjourney.mvp.BaseView
@@ -26,9 +27,21 @@ interface MapContract {
          * @param venues venues list
          */
         fun onVenuesChanged(venues: List<Venue>)
+
+        /**
+         * Notify location was changed
+         *
+         * @param location current location
+         */
+        fun onLocationChanged(location: Location)
     }
 
     interface Presenter : BasePresenter {
+
+        /**
+         * Add subscriber on location changing event
+         */
+        fun listenLocation()
 
         /**
          * Notify map is ready

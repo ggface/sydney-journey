@@ -21,6 +21,7 @@ object Consts {
     const val PREFERENCES = "APP_PREFERENCES"
 
     const val REQUEST_CODE_PREFERENCES = 100
+    const val REQUEST_CODE_GEO_PERMISSIONS = 102
 
     const val LOG_SYSTEM = "LOG_SYSTEM"
     const val LOG_GEO = "LOG_GEO"
