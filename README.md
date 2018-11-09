@@ -12,4 +12,4 @@ Notes:
 
 * I performed application based on MVP pattern. 
 * I used RxJava and Room library from Android Architecture Components.
-* Location feature include checking of enabled gps and permissions for Android M and later.
+* Location feature includes checking of enabled gps and permissions for Android M and later.
