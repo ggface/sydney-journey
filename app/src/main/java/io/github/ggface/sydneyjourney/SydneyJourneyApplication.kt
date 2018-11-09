@@ -25,7 +25,7 @@ class SydneyJourneyApplication : Application() {
         Single.just(this).observeOn(Schedulers.io())
                 .subscribe({
                     mRetrofitApi = RetrofitApi()
-                    remoteRepository = Repository(this, mRetrofitApi.venuesRemoteApi)
+                    remoteRepository = Repository(it, mRetrofitApi.venuesRemoteApi)
                 }, { t -> Timber.tag(LOG_SYSTEM).d(t.message) })
     }
 
